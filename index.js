@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const chalk = require('chalk')
+const colors = require('colors')
 const moment = require('moment')
 const mkdirp = require('mkdirp')
 const winston = require('winston')
@@ -10,6 +10,7 @@ const { calculateTime, handleDatum, handleDefault, levels } = require('./utils/c
 const development = process.env.NODE_ENV === 'development'
 const production = process.env.NODE_ENV === 'production'
 const situation = !(development || production)
+const root = situation ? path.join(path.dirname(process.mainModule.filename), 'logs') : `/data/logs/`
 
 /**
  * 处理日志的主流程〜
@@ -27,7 +28,7 @@ function logger (config = {}) {
     },
     fileName: 'app',
     format: winston.format.json(),
-    root: path.join(path.dirname(__dirname), '../logs'),
+    root,
     useKoa: false,
   }
 
@@ -68,7 +69,7 @@ function logger (config = {}) {
           winston.format.colorize(colorize()),
           winston.format.printf(info => {
             const { level, message } = info
-            const news = options.useKoa ? message : chalk[data.color](JSON.stringify(message))
+            const news = options.useKoa ? message : colors[data.color](JSON.stringify(message))
             const response = `[${timestamp()}][${level}] ${data.icon} \n${news}`
             return response
           }),
