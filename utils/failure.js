@@ -1,4 +1,3 @@
-// 失败的作品 - 记录
 const path = require('path')
 const fse = require('fs-extra')
 const chalk = require('chalk')
@@ -32,7 +31,6 @@ const { times, logTypes, takeReq, takeRes } = {
       icon: '✎',
     },
   ],
-  // req信息
   takeReq (ctx) {
     return {
       url: ctx.url,
@@ -45,7 +43,6 @@ const { times, logTypes, takeReq, takeRes } = {
       query: ctx.query,
     }
   },
-  // res信息
   takeRes (ctx) {
     return {
       statusCode: ctx.status,
@@ -66,7 +63,6 @@ function writeLogFile (options) {
   const filePath = path.resolve(options.defaultPath, `${options.applicationName}.${options.type}-${times.day}.log`)
   fse.outputFile(filePath, options.write, { flag: 'a' }).catch(err => {
     console.log(err)
-    throw new Error('写入文件失败')
   })
 }
 
@@ -176,7 +172,6 @@ function logger (config) {
 
   function log (ctx, next) {
     ctx.logger = factoryLog({ ctx, options })
-    // 在finish监听
     if (options.auto) {
       ctx.res.on('finish', () => {
         createLog({

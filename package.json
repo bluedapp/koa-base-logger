@@ -1,6 +1,6 @@
 {
   "name": "koa-base-logger",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "koa logger middleware",
   "main": "index.js",
   "directories": {},

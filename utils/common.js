@@ -1,8 +1,8 @@
 const humanize = require('humanize-number')
 
 /**
- * time 计算服务端响应时间
- * @param {Number} start 毫秒数
+ * time
+ * @param {Number} start milliseconds
  */
 function calculateTime (start) {
   const delta = Date.now() - start
@@ -10,8 +10,8 @@ function calculateTime (start) {
 }
 
 /**
- * 返回报错信息
- * @param {Object} err 错误
+ * Error Messages
+ * @param {Object} err error
  */
 function handleError (err) {
   let error = null
@@ -28,8 +28,8 @@ function handleError (err) {
   return error
 }
 /**
- * 返回自定义信息
- * @param {Object} data 信息
+ * Custom Messages
+ * @param {Object} data
  */
 function handleMessage (data) {
   let result = ''
@@ -44,9 +44,9 @@ function handleMessage (data) {
 }
 
 /**
- * koa框架
- * 返回日志内容
- * @param {Object} {} 参数
+ * Koa
+ * Log Messages
+ * @param {Object} {} data
  */
 function handleDatum ({ ctx, err, message, responseTime } = {}) {
   const req = ctx.request
@@ -96,9 +96,9 @@ function handleDatum ({ ctx, err, message, responseTime } = {}) {
 }
 
 /**
- * 非koa框架
- * 返回日志内容
- * @param {Object} {} 参数err、message、time
+ * other
+ * Log Messages
+ * @param {Object} {} err、message、time
  */
 function handleDefault ({ err, message, time } = {}) {
   const response = {
@@ -118,8 +118,8 @@ function handleDefault ({ err, message, time } = {}) {
 }
 
 /**
- * 类型判断
- * @param {anything} param 需要判断的值
+ * Type
+ * @param {anything} param value
  * [object String]\[object Number]\[object Array]\[object Object]\[object Promise]
  * [object Boolean]\[object Undefined]\[object Null]\[object Date]\[object Function]
  * [object RegExp]\[object Error]\[object HTMLDocument]\[object global]\[object Symbol]\[object Set]
@@ -129,7 +129,7 @@ function judgeType (param) {
   return Object.prototype.toString.call(param).slice(8, -1).toLocaleLowerCase()
 }
 
-// 日志类型
+// log type
 const levels = [
   {
     color: 'red',

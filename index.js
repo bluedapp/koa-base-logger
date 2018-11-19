@@ -7,17 +7,19 @@ const winston = require('winston')
 require('winston-daily-rotate-file')
 const { calculateTime, handleDatum, handleDefault, levels } = require('./utils/common')
 
+const localPath = path.join(path.dirname(__dirname), '../logs')
+const servePath = `/data/logs/`
 const development = process.env.NODE_ENV === 'development'
 const production = process.env.NODE_ENV === 'production'
 const situation = !(development || production)
-const root = situation ? path.join(path.dirname(process.mainModule.filename), 'logs') : `/data/logs/`
+const root = !situation ? servePath : localPath
 
 /**
- * 处理日志的主流程〜
- * @param {Object} config 自定义的属性
+ * Main Process
+ * @param {Object} config attribute
  */
 function logger (config = {}) {
-  // 默认配置
+  // default
   const defaults = {
     appName: 'app',
     automate: true,
@@ -32,12 +34,19 @@ function logger (config = {}) {
     useKoa: false,
   }
 
-  // 合并配置
+  // merge
   const options = Object.assign({}, defaults, config)
-  // 日志输出目录
-  const logsPath = path.join(options.root, options.appName)
+  let logsPath = path.join(options.root, options.appName)
+
+  // log output directory
   if (!fs.existsSync(logsPath)) {
-    mkdirp.sync(logsPath)
+    try {
+      mkdirp.sync(logsPath)
+    } catch (err) {
+      console.log(colors.red(`Create '${servePath}' directory is failure!`))
+      logsPath = path.join(localPath, options.appName)
+      mkdirp.sync(logsPath)
+    }
   }
 
   const createLogger = data => winston.createLogger(data)
@@ -47,7 +56,6 @@ function logger (config = {}) {
   const openMeans = {}
   const colorize = () => options.useKoa ? { message: true } : {}
   levels.forEach(data => {
-    // 创建输出目录、日记文件
     const logger = createLogger({
       level: 'verbose',
       format: options.format,
@@ -61,7 +69,7 @@ function logger (config = {}) {
       ],
     })
 
-    // 本地、其它环境非verbose都输出到控制台
+    // local or not “verbose”, log will output in Terminal
     if (situation || data.type !== 'verbose') {
       logger.add(new winston.transports.Console({
         format: winston.format.combine(
@@ -70,7 +78,7 @@ function logger (config = {}) {
           winston.format.printf(info => {
             const { level, message } = info
             const news = options.useKoa ? message : colors[data.color](JSON.stringify(message))
-            const response = `[${timestamp()}][${level}] ${data.icon} \n${news}`
+            const response = `[${timestamp()}][${data.type}] ${data.icon} \n${news}`
             return response
           }),
         ),
@@ -81,8 +89,8 @@ function logger (config = {}) {
   })
 
   /**
-   * 往文档里写访问记录
-   * @param {Object} 对象
+   * Write access to the records
+   * @param {Object} data
    */
   function handleLogger ({ level, datum } = {}) {
     const data = Object.assign({}, datum, {
@@ -94,7 +102,7 @@ function logger (config = {}) {
   }
 
   /**
-   * 公开日志方法到ctx.logger上
+   * bind ctx.logger
    * @param {Object} ctx
    */
   function handleDaily ({ ctx } = {}) {
@@ -105,7 +113,6 @@ function logger (config = {}) {
         message: {},
       }
 
-      // 公开的方法只有为error时接收两个参数（第一个参数为err，第二个为message），其它情况为一个(message)
       result[data.type] = (...args) => {
         if (args.length > 0) {
           const temp = args[0]
@@ -135,21 +142,18 @@ function logger (config = {}) {
   }
 
   /**
-   * 返回中间件函数
+   * return middleware function
    * @param {Object} ctx
    * @param {Function} next
    */
   async function log (ctx, next) {
     const start = Date.now()
+    const regex = /\.(js|css|png|ico|bmp|jpg|gif|webp|jpe|js?.|css?.|png?.|ico?.|bmp?.|jpg?.|gif?.|webp?.|jpe?.|redirect?.)/ig
 
-    // 把公开的日志方法挂载到ctx.logger
     ctx.logger = handleDaily({ ctx })
 
-    // 是否需要自动记所有请求的日志
     if (options.automate) {
       ctx.res.on('finish', () => {
-        // 排除掉请求favicon.ico的情况
-        const regex = /\.(js|css|png|ico|bmp|jpg|gif|webp|jpe|js?.|css?.|png?.|ico?.|bmp?.|jpg?.|gif?.|webp?.|jpe?.)/ig
         if (regex.test(ctx.req.url)) {
           return false
         }
