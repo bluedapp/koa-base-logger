@@ -1,8 +1,9 @@
 {
   "name": "koa-base-logger",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "koa logger middleware",
   "main": "index.js",
+  "types": "index.d.ts",
   "directories": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +12,15 @@
     "type": "git",
     "url": "git+https://github.com/bluedapp/koa-base-logger.git"
   },
+  "engines": {
+    "node": ">=8.11.2"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "utils/common.js",
+    "utils/failure.js"
+  ],
   "keywords": [
     "koa",
     "koa2",

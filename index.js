@@ -26,7 +26,7 @@ function logger (config = {}) {
     dailyRotateFile: {
       datePattern: 'YYYY-MM-DD',
       maxFiles: '30d',
-      maxSize: '20m',
+      maxSize: '100m',
     },
     fileName: 'app',
     format: winston.format.json(),
@@ -148,7 +148,9 @@ function logger (config = {}) {
    */
   async function log (ctx, next) {
     const start = Date.now()
-    const regex = /\.(js|css|png|ico|bmp|jpg|gif|webp|jpe|js?.|css?.|png?.|ico?.|bmp?.|jpg?.|gif?.|webp?.|jpe?.|redirect?.)/ig
+
+    const regex = /\.(?:js|css|png|ico|bmp|jpg|jpeg|gif|webp|jpe)/ig
+    const redirect = /\/redirect?./ig
 
     ctx.logger = handleDaily({ ctx })
 
@@ -157,16 +159,19 @@ function logger (config = {}) {
         if (regex.test(ctx.req.url)) {
           return false
         }
+        if (redirect.test(ctx.req.url)) {
+          return false
+        }
         handleLogger({
           level: { type: 'verbose', icon: '✈' },
-          datum: handleDatum({ ctx, time: calculateTime(start) }),
+          datum: handleDatum({ ctx, responseTime: calculateTime(start) }),
         })
       })
     }
     return next().catch(err => {
       handleLogger({
         level: { type: 'error', icon: '✖' },
-        datum: handleDatum({ ctx, err, time: calculateTime(start) }),
+        datum: handleDatum({ ctx, err, responseTime: calculateTime(start) }),
       })
     })
   }

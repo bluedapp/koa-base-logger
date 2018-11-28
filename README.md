@@ -77,10 +77,9 @@ ctx.logger.error(err, { notice: 'Who is my love match?' })
   dailyRotateFile: {
     datePattern: 'YYYY-MM-DD',
     maxFiles: '30d',
-    maxSize: '20m',
+    maxSize: '100m',
   },
   fileName: 'app',
-  format: winston.format.json(),
   root: path.join(path.dirname(__dirname), '../logs'),
   useKoa: false,
 }

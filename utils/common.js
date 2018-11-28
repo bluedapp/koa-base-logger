@@ -57,7 +57,6 @@ function handleDatum ({ ctx, err, message, responseTime } = {}) {
     app: ctx.app,
     req: {
       uid: ctx.cookies.get('uid') || '',
-      url: req.url,
       href: req.href,
       body: req.body,
       method: ctx.method,
@@ -66,11 +65,6 @@ function handleDatum ({ ctx, err, message, responseTime } = {}) {
       length: ctx.length || '',
       protocol: ctx.protocol,
       charset: ctx.charset || '',
-      origin: ctx.origin,
-      originalUrl: ctx.originalUrl,
-      'x-requested-with': req.header['x-requested-with'] || '',
-      'x-forwarded-proto': req.header['x-forwarded-proto'] || '',
-      'x-forwarded-for': req.header['x-forwarded-for'] || '',
       ip: req.ip,
       ips: req.ips,
     },
@@ -78,7 +72,6 @@ function handleDatum ({ ctx, err, message, responseTime } = {}) {
       status: res.status,
       message: res.message,
       type: res.type,
-      // headers: res.header,
       state: ctx.state,
     },
   }
@@ -89,7 +82,7 @@ function handleDatum ({ ctx, err, message, responseTime } = {}) {
   }
 
   if (responseTime) {
-    response.res.responseTime = responseTime
+    response.responseTime = responseTime
   }
 
   return response
