@@ -5,6 +5,7 @@ declare namespace logger {
     appName?: string
     automate?: boolean
     fileName?: string
+    recordBody?: boolean
     root?: string
     useKoa?: boolean
   }

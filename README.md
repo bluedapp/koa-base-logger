@@ -22,8 +22,8 @@ const app = new Koa()
 const router = new Router()
 
 app.use(baselogger({
-  appName: 'app name',
-  fileName: 'file name',
+  appName: 'app',
+  fileName: 'file',
   useKoa: true,
 }))
 
@@ -60,9 +60,8 @@ const baselogger = require('koa-base-logger')
 app.use(baselogger({ useKoa: true }))
 // or
 app.use(baselogger({
-  appName: 'app name',
-  automate: false,
-  fileName: 'file name',
+  appName: 'app',
+  fileName: 'file',
   useKoa: true,
 }))
 
@@ -80,6 +79,7 @@ ctx.logger.error(err, { notice: 'Who is my love match?' })
     maxSize: '100m',
   },
   fileName: 'app',
+  recordBody: false,
   root: path.join(path.dirname(__dirname), '../logs'),
   useKoa: false,
 }

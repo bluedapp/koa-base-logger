@@ -32,14 +32,19 @@ function handleError (err) {
  * @param {Object} data
  */
 function handleMessage (data) {
-  let result = ''
-  if (data && judgeType(data) === 'object') {
+  let result = null
+  const type = judgeType(data)
+
+  if (!data) {
+    result = null
+  } else if (type === 'object') {
     result = data
   } else if (Array.isArray(data)) {
     result = data.join(',')
-  } else {
-    result = data || {}
+  } else if (type === 'string') {
+    result = data
   }
+
   return result
 }
 
@@ -48,14 +53,25 @@ function handleMessage (data) {
  * Log Messages
  * @param {Object} {} data
  */
-function handleDatum ({ ctx, err, message, responseTime } = {}) {
-  const req = ctx.request
-  const res = ctx.response
-
+function handleDatum ({
+  ctx,
+  err,
+  message,
+  recordBody,
+  responseTime,
+  verbose,
+} = {}) {
   const response = {
     msg: handleMessage(message),
-    app: ctx.app,
-    req: {
+  }
+
+  if (verbose) {
+    const req = ctx.request
+    const res = ctx.response
+
+    response.app = ctx.app
+
+    response.req = {
       uid: ctx.cookies.get('uid') || '',
       href: req.href,
       body: req.body,
@@ -67,13 +83,16 @@ function handleDatum ({ ctx, err, message, responseTime } = {}) {
       charset: ctx.charset || '',
       ip: req.ip,
       ips: req.ips,
-    },
-    res: {
+    }
+    response.res = {
       status: res.status,
       message: res.message,
       type: res.type,
-      state: ctx.state,
-    },
+    }
+
+    if (recordBody) {
+      response.res.body = res.body
+    }
   }
 
   const error = handleError(err)

@@ -30,6 +30,7 @@ function logger (config = {}) {
     },
     fileName: 'app',
     format: winston.format.json(),
+    recordBody: false,
     root,
     useKoa: false,
   }
@@ -54,7 +55,6 @@ function logger (config = {}) {
   const { datePattern, maxFiles, maxSize } = options.dailyRotateFile
 
   const openMeans = {}
-  const colorize = () => options.useKoa ? { message: true } : {}
   levels.forEach(data => {
     const logger = createLogger({
       level: 'verbose',
@@ -71,13 +71,14 @@ function logger (config = {}) {
 
     // local or not “verbose”, log will output in Terminal
     if (situation || data.type !== 'verbose') {
+      const pass = (data.type === 'info' || data.type === 'warn')
       logger.add(new winston.transports.Console({
         format: winston.format.combine(
           // winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          winston.format.colorize(colorize()),
+          // winston.format.colorize(colorize()),
           winston.format.printf(info => {
-            const { level, message } = info
-            const news = options.useKoa ? message : colors[data.color](JSON.stringify(message))
+            const { message } = info
+            const news = pass ? colors[data.color](JSON.stringify(message)) : colors[data.color](message)
             const response = `[${timestamp()}][${data.type}] ${data.icon} \n${news}`
             return response
           }),
@@ -94,8 +95,8 @@ function logger (config = {}) {
    */
   function handleLogger ({ level, datum } = {}) {
     const data = Object.assign({}, datum, {
-      appName: options.appName,
-      level: level.type,
+      // appName: options.appName,
+      // level: level.type,
       timestamp: timestamp(),
     })
     openMeans[level.type][level.type](data)
@@ -103,14 +104,13 @@ function logger (config = {}) {
 
   /**
    * bind ctx.logger
-   * @param {Object} ctx
    */
-  function handleDaily ({ ctx } = {}) {
+  function handleDaily () {
     const result = {}
     levels.forEach(data => {
       const content = {
         error: null,
-        message: {},
+        message: null,
       }
 
       result[data.type] = (...args) => {
@@ -118,18 +118,16 @@ function logger (config = {}) {
           const temp = args[0]
           if (data.type === 'error') {
             content.error = temp
-            content.message = args[1] || {}
+            content.message = args[1] || null
           } else {
             content.message = temp
           }
         }
 
-        let datum = {}
-        if (options.useKoa) {
-          datum = handleDatum({ ctx, err: content.error, message: content.message })
-        } else {
-          datum = handleDefault({ err: content.error, message: content.message })
-        }
+        const datum = handleDefault({
+          err: content.error,
+          message: content.message,
+        })
 
         handleLogger({
           level: data,
@@ -164,14 +162,23 @@ function logger (config = {}) {
         }
         handleLogger({
           level: { type: 'verbose', icon: '✈' },
-          datum: handleDatum({ ctx, responseTime: calculateTime(start) }),
+          datum: handleDatum({
+            ctx,
+            recordBody: options.recordBody,
+            responseTime: calculateTime(start),
+            verbose: true,
+          }),
         })
       })
     }
     return next().catch(err => {
       handleLogger({
         level: { type: 'error', icon: '✖' },
-        datum: handleDatum({ ctx, err, responseTime: calculateTime(start) }),
+        datum: handleDatum({
+          ctx,
+          err,
+          responseTime: calculateTime(start),
+        }),
       })
     })
   }
