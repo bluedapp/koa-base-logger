@@ -7,7 +7,6 @@ declare namespace logger {
     fileName?: string
     recordBody?: boolean
     root?: string
-    useKoa?: boolean
   }
 }
 
@@ -19,6 +18,6 @@ declare namespace logger.options {
   }
 }
 
-declare function logger(config?: logger.options): Middleware
+declare function BaseLogger(config?: logger.options): Middleware
 
-export = logger
+export = BaseLogger

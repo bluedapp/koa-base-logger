@@ -18,7 +18,7 @@ const root = !situation ? servePath : localPath
  * Main Process
  * @param {Object} config attribute
  */
-function logger (config = {}) {
+function BaseLogger (config = {}) {
   // default
   const defaults = {
     appName: 'app',
@@ -32,7 +32,6 @@ function logger (config = {}) {
     format: winston.format.json(),
     recordBody: false,
     root,
-    useKoa: false,
   }
 
   // merge
@@ -103,7 +102,7 @@ function logger (config = {}) {
   }
 
   /**
-   * bind ctx.logger
+   * Public methods
    */
   function handleDaily () {
     const result = {}
@@ -183,11 +182,7 @@ function logger (config = {}) {
     })
   }
 
-  if (options.useKoa) {
-    return log
-  } else {
-    return handleDaily()
-  }
+  return log
 }
 
-module.exports = logger
+module.exports = BaseLogger

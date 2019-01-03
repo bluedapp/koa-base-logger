@@ -1,7 +1,7 @@
 koa-base-logger
 ===
 
-koa logger middleware
+Logging middleware for koa
 
 ## Installation
 
@@ -24,7 +24,6 @@ const router = new Router()
 app.use(baselogger({
   appName: 'app',
   fileName: 'file',
-  useKoa: true,
 }))
 
 router.get('/', (ctx, next) => {
@@ -47,28 +46,6 @@ app.listen(0258)
 
 ## Options
 ```javascript
-// example
-const logger = require('koa-base-logger')()
-
-logger.info({ notice: 'I lose what i love most...' })
-logger.warn({ notice: 'I also want to look for a girlfriend...' })
-logger.error(err, { notice: 'Who is my love match?' })
-
-// example - koa
-const baselogger = require('koa-base-logger')
-
-app.use(baselogger({ useKoa: true }))
-// or
-app.use(baselogger({
-  appName: 'app',
-  fileName: 'file',
-  useKoa: true,
-}))
-
-ctx.logger.info({ notice: 'I lose what i love most...' })
-ctx.logger.warn({ notice: 'I also want to look for a girlfriend...' })
-ctx.logger.error(err, { notice: 'Who is my love match?' })
-
 // defaults options
 {
   appName: 'app',
@@ -81,7 +58,6 @@ ctx.logger.error(err, { notice: 'Who is my love match?' })
   fileName: 'app',
   recordBody: false,
   root: path.join(path.dirname(__dirname), '../logs'),
-  useKoa: false,
 }
 
 ```

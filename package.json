@@ -1,7 +1,7 @@
 {
   "name": "koa-base-logger",
-  "version": "0.0.6",
-  "description": "koa logger middleware",
+  "version": "0.0.7",
+  "description": "Logging middleware for koa",
   "main": "index.js",
   "types": "index.d.ts",
   "directories": {},
@@ -18,8 +18,7 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "utils/common.js",
-    "utils/failure.js"
+    "utils/common.js"
   ],
   "keywords": [
     "koa",
@@ -38,7 +37,7 @@
   },
   "homepage": "https://github.com/bluedapp/koa-base-logger",
   "dependencies": {
-    "colors": "^1.3.2",
+    "colors": "^1.3.3",
     "humanize-number": "0.0.2",
     "mkdirp": "^0.5.1",
     "moment": "^2.22.2",
