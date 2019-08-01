@@ -5,7 +5,7 @@ const moment = require('moment')
 const mkdirp = require('mkdirp')
 const winston = require('winston')
 require('winston-daily-rotate-file')
-const { calculateTime, handleDatum, handleDefault, levels } = require('./utils/common')
+const { calculateTime, handleDatum, handleDefault, levels, loggerError } = require('./utils/common')
 
 const localPath = path.join(path.dirname(__dirname), '../logs')
 const servePath = `/data/logs/`
@@ -185,4 +185,7 @@ function BaseLogger (config = {}) {
   return log
 }
 
-module.exports = BaseLogger
+module.exports = {
+  BaseLogger,
+  loggerError,
+}
