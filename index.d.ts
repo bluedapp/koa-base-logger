@@ -20,4 +20,7 @@ declare namespace logger.options {
 
 declare function BaseLogger(config?: logger.options): Middleware
 
-export = BaseLogger
+export {
+  BaseLogger,
+  loggerError
+} 

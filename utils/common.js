@@ -1,4 +1,10 @@
 const humanize = require('humanize-number')
+const events = require('events')
+
+class Logger extends events.EventEmitter {
+
+}
+const loggerError = new Logger()
 
 /**
  * time
@@ -14,6 +20,9 @@ function calculateTime (start) {
  * @param {Object} err error
  */
 function handleError (err) {
+  if (err) {
+    loggerError.emit('error', err)
+  }
   let error = null
   if (judgeType(err) === 'error') {
     error = {
@@ -171,4 +180,5 @@ module.exports = {
   handleDefault,
   judgeType,
   levels,
+  loggerError,
 }
