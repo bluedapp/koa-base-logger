@@ -1,5 +1,5 @@
 import { Middleware } from 'koa'
-
+import event from 'events'
 declare namespace logger {
   interface options {
     appName?: string
@@ -18,9 +18,5 @@ declare namespace logger.options {
   }
 }
 
-declare function BaseLogger(config?: logger.options): Middleware
-
-export {
-  BaseLogger,
-  loggerError
-} 
+export declare function BaseLogger(config?: logger.options): Middleware
+export declare const loggerError: event.EventEmitter
