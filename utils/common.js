@@ -1,9 +1,8 @@
 const humanize = require('humanize-number')
 const events = require('events')
 
-class Logger extends events.EventEmitter {
+class Logger extends events.EventEmitter { }
 
-}
 const loggerError = new Logger()
 
 /**
@@ -19,11 +18,13 @@ function calculateTime (start) {
  * Error Messages
  * @param {Object} err error
  */
-function handleError (err) {
-  if (err) {
-    loggerError.emit('error', err)
-  }
+function handleError (err, ctx) {
   let error = null
+
+  if (err) {
+    loggerError.emit('error', err, ctx || {})
+  }
+
   if (judgeType(err) === 'error') {
     error = {
       name: err.name,
@@ -34,8 +35,10 @@ function handleError (err) {
       columnNumber: err.columnNumber || '',
     }
   }
+
   return error
 }
+
 /**
  * Custom Messages
  * @param {Object} data
@@ -104,7 +107,7 @@ function handleDatum ({
     }
   }
 
-  const error = handleError(err)
+  const error = handleError(err, ctx)
   if (error) {
     response.error = error
   }
