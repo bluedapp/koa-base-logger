@@ -15,11 +15,10 @@ const situation = !(development || production)
 const root = !situation ? servePath : localPath
 
 /**
- * Main Process
+ * baseLogger
  * @param {Object} config attribute
  */
 function baseLogger (config = {}) {
-  // default
   const defaults = {
     appName: 'app',
     automate: true,
@@ -34,7 +33,6 @@ function baseLogger (config = {}) {
     root,
   }
 
-  // merge
   const options = Object.assign({}, defaults, config)
   let logsPath = path.join(options.root, options.appName)
 
@@ -56,7 +54,7 @@ function baseLogger (config = {}) {
   const openMeans = {}
   levels.forEach(data => {
     const logger = createLogger({
-      level: 'verbose',
+      level: data.type,
       format: options.format,
       transports: [
         new (winston.transports.DailyRotateFile)({
@@ -68,13 +66,12 @@ function baseLogger (config = {}) {
       ],
     })
 
-    // local or not “verbose”, log will output in Terminal
-    if (situation || data.type !== 'verbose') {
+    // If it is a local environment
+    // The log will be displayed in the terminal
+    if (situation && data.type !== 'verbose') {
       const pass = (data.type === 'info' || data.type === 'warn')
       logger.add(new winston.transports.Console({
         format: winston.format.combine(
-          // winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          // winston.format.colorize(colorize()),
           winston.format.printf(info => {
             const { message } = info
             const news = pass ? colors[data.color](JSON.stringify(message)) : colors[data.color](message)
@@ -89,20 +86,18 @@ function baseLogger (config = {}) {
   })
 
   /**
-   * Write access to the records
+   * handleLogger
    * @param {Object} data
    */
   function handleLogger ({ level, datum } = {}) {
     const data = Object.assign({}, datum, {
-      // appName: options.appName,
-      // level: level.type,
       timestamp: timestamp(),
     })
     openMeans[level.type][level.type](data)
   }
 
   /**
-   * Public methods
+   * handleDaily
    */
   function handleDaily () {
     const result = {}
@@ -139,6 +134,7 @@ function baseLogger (config = {}) {
   }
 
   /**
+   * log
    * return middleware function
    * @param {Object} ctx
    * @param {Function} next
