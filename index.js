@@ -68,13 +68,12 @@ function baseLogger (config = {}) {
 
     // If it is a local environment
     // The log will be displayed in the terminal
-    if (situation && data.type !== 'verbose') {
-      const pass = (data.type === 'info' || data.type === 'warn')
+    if (situation) {
       logger.add(new winston.transports.Console({
         format: winston.format.combine(
           winston.format.printf(info => {
             const { message } = info
-            const news = pass ? colors[data.color](JSON.stringify(message)) : colors[data.color](message)
+            const news = colors[data.color](JSON.stringify(message))
             const response = `[${timestamp()}][${data.type}] ${data.icon} \n${news}`
             return response
           }),
